@@ -51,84 +51,102 @@
       const $monsterName = document.querySelector("#monster-name"); // 몬스터 이름
       const $monsterHp = document.querySelector("#monster-hp"); // 몬스터 체력
       const $monsterAtt = document.querySelector("#monster-att"); // 몬스터 공격력
-      const hero = {
-        name: "", // 주인공 이름은 입력받음.
-        lev: 1,
-        maxHp: 100,
-        hp: 100,
-        xp: 0,
-        att: 10,
-        attack(monster) {
-          // 몬스터 공격 메소드
-          monster.hp -= this.att;
-          this.hp -= monster.att;
-        },
-        heal() {
-          // 자가 회복 메소드
+      class Game {
+        constructor(name) {
+          this.monster = null;
+          this.hero = null;
+          this.monsterList = [
+            { name: "마왕", maxHp: 150, hp: 150, att: 35, xp: 50 },
+            { name: "슬라임", maxHp: 25, hp: 25, att: 10, xp: 10 },
+            { name: "스켈레톤", maxHp: 50, hp: 50, att: 35, xp: 20 },
+          ];
+        }
+      }
+
+      class Unit {
+        constructor(name, hp, xp, att) {
+          this.name = name;
+          this.maxHp = hp;
+          this.hp = hp;
+          this.xp = xp;
+          this.att = att;
+        }
+
+        attack(target) {
+          target.hp -= this.att;
+        }
+      }
+
+      class Hero extends Unit {
+        constructor(name) {
+          super(name, 100, 0, 10);
+          this.lev = 1;
+        }
+        heal(monster) {
           this.hp += 20;
           this.hp -= monster.att;
-        },
-      };
+        }
+      }
+
+      class Monster extends Unit {}
+
+      let game = null;
       let monster = null;
-      const monsterList = [
-        { name: "마왕", maxHp: 150, hp: 150, att: 35, xp: 50 },
-        { name: "슬라임", maxHp: 25, hp: 25, att: 10, xp: 10 },
-        { name: "스켈레톤", maxHp: 50, hp: 50, att: 35, xp: 20 },
-      ];
 
       $startScreen.addEventListener("submit", (event) => {
         event.preventDefault();
         const name = event.target["name-input"].value;
-        $startScreen.style.display = "none";
-        $gameMenu.style.display = "block";
-        $heroName.textContent = name;
-        // 주인공 정보 표시
-        $heroLevel.textContent = `${hero.lev}Lev `;
-        $heroHp.textContent = `HP: ${hero.hp}/${hero.maxHp} `;
-        $heroXp.textContent = `XP: ${hero.xp}/${hero.lev * 15} `;
-        $heroAtt.textContent = `ATT: ${hero.att} `;
-        // hero 객체 리터럴의 name 속성에 input으로 받은 주인공 이름을 할당함.
-        hero.name = name;
+        game = new Game(name);
+        // $startScreen.style.display = "none";
+        // $gameMenu.style.display = "block";
+        // $heroName.textContent = name;
+        // // 주인공 정보 표시
+        // $heroLevel.textContent = `${hero.lev}Lev `;
+        // $heroHp.textContent = `HP: ${hero.hp}/${hero.maxHp} `;
+        // $heroXp.textContent = `XP: ${hero.xp}/${hero.lev * 15} `;
+        // $heroAtt.textContent = `ATT: ${hero.att} `;
+        // // hero 객체 리터럴의 name 속성에 input으로 받은 주인공 이름을 할당함.
+        // hero.name = name;
       });
 
-      $gameMenu.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const input = event.target["menu-input"].value;
-        if (input === "1") {
-          //1번 모험
-          $gameMenu.style.display = "none"; // 일반 메뉴 숨기기
-          $battleMenu.style.display = "block"; // 전투 메뉴 보이기
-          // 몬스터 리스트에서 깊은 복사를 통해 몬스터 정보를 빼와야 함. 안 그럼 참조가 되어서 원본 몬스터 리스트에 영향을 줌. 또한, 깊은 복사를 하지 않으면, 객체의 1단계만 복사하기에 깊은 복사를 해야함.
-          monster = JSON.parse(
-            JSON.stringify(
-              monsterList[Math.floor(Math.random() * monsterList.length)]
-            )
-          ); //몬스터 무작위로 가져오기
-          $monsterName.textContent = monster.name;
-          $monsterHp.textContent = ` HP: ${monster.hp} / ${monster.maxHp} `;
-          $monsterAtt.textContent = `ATT: ${monster.att}`;
-        } else if (input === "2") {
-          // 2번 휴식
-        } else if (input === "3") {
-          // 3번 종료
-        }
-      });
+      // $gameMenu.addEventListener("submit", (event) => {
+      //   event.preventDefault();
+      //   const input = event.target["menu-input"].value;
+      //   if (input === "1") {
+      //     //1번 모험
+      //     $gameMenu.style.display = "none"; // 일반 메뉴 숨기기
+      //     $battleMenu.style.display = "block"; // 전투 메뉴 보이기
+      //     // 몬스터 리스트에서 깊은 복사를 통해 몬스터 정보를 빼와야 함. 안 그럼 참조가 되어서 원본 몬스터 리스트에 영향을 줌. 또한, 깊은 복사를 하지 않으면, 객체의 1단계만 복사하기에 깊은 복사를 해야함.
+      //     monster = JSON.parse(
+      //       JSON.stringify(
+      //         monsterList[Math.floor(Math.random() * monsterList.length)]
+      //       )
+      //     ); //몬스터 무작위로 가져오기
+      //     $monsterName.textContent = monster.name;
+      //     $monsterHp.textContent = ` HP: ${monster.hp} / ${monster.maxHp} `;
+      //     $monsterAtt.textContent = `ATT: ${monster.att}`;
+      //   } else if (input === "2") {
+      //     // 2번 휴식
+      //   } else if (input === "3") {
+      //     // 3번 종료
+      //   }
+      // });
 
-      $battleMenu.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const input = event.target["battle-input"].value;
-        if (input === "1") {
-          // 1번 공격
-          hero.attack(monster);
-          $heroHp.textContent = `HP: ${hero.hp}/${hero.maxHp} `;
-          $monsterHp.textContent = ` HP: ${monster.hp} / ${monster.maxHp} `;
-          $message.textContent = `${hero.att}의 피해를 주고, ${monster.att}의 피해를 받았다`;
-        } else if (input === "2") {
-          // 2번 회복
-        } else if (input === "3") {
-          // 3번 도망
-        }
-      });
+      // $battleMenu.addEventListener("submit", (event) => {
+      //   event.preventDefault();
+      //   const input = event.target["battle-input"].value;
+      //   if (input === "1") {
+      //     // 1번 공격
+      //     hero.attack(monster);
+      //     $heroHp.textContent = `HP: ${hero.hp}/${hero.maxHp} `;
+      //     $monsterHp.textContent = ` HP: ${monster.hp} / ${monster.maxHp} `;
+      //     $message.textContent = `${hero.att}의 피해를 주고, ${monster.att}의 피해를 받았다`;
+      //   } else if (input === "2") {
+      //     // 2번 회복
+      //   } else if (input === "3") {
+      //     // 3번 도망
+      //   }
+      // });
     </script>
   </body>
 </html>
