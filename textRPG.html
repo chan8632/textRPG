@@ -60,6 +60,53 @@
             { name: "슬라임", maxHp: 25, hp: 25, att: 10, xp: 10 },
             { name: "스켈레톤", maxHp: 50, hp: 50, att: 35, xp: 20 },
           ];
+          this.start(); // 이거 뭐지??
+        }
+
+        start() {
+          $gameMenu.addEventListener("submit", this.onGameMenuInput);
+          $battleMenu.addEventListener("submit", this.onBattleMenuInput);
+          this.changeScreen('game');
+        }
+        changeScreen(screen) {
+          if (screen === "start") {
+            $startScreen.style.display = "block";
+            $gameMenu.style.display = "none";
+            $battleMenu.style.display = "none";
+          } else if (screen === "game") {
+            $startScreen.style.display = "none";
+            $gameMenu.style.display = "block";
+            $battleMenu.style.display = "none";
+          }
+          if (screen === "battle") {
+            $startScreen.style.display = "none";
+            $gameMenu.style.display = "none";
+            $battleMenu.style.display = "block";
+          }
+        }
+        onGameMenuInput = (event) => {
+          event.preventDefault();
+          const input = event.target["#menu-input"].value;
+          if (input === "1") {
+            //전투
+            this.changeScreen("battle");
+          } else if (input === "2") {
+            // 휴식
+          } else if (input === "3") {
+            // 종료
+          }
+        }
+        
+        onBattleMenuInput = (event) => {
+          event.preventDefault();
+          const input = event.target["#battle-input"].value;
+          if (input === "1") {
+            //공격
+          } else if (input === "2") {
+            // 회복
+          } else if (input === "3") {
+            // 도망
+          }
         }
       }
 
@@ -97,8 +144,6 @@
         event.preventDefault();
         const name = event.target["name-input"].value;
         game = new Game(name);
-        // $startScreen.style.display = "none";
-        // $gameMenu.style.display = "block";
         // $heroName.textContent = name;
         // // 주인공 정보 표시
         // $heroLevel.textContent = `${hero.lev}Lev `;
