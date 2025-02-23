@@ -93,7 +93,8 @@
           const input = event.target["menu-input"].value;
           if (input === "1") {
             // 모험
-            this.changeScreen("battle");
+            this.changeScreen("battle"); // 전투 메뉴로 바꿈.
+            this.createMonster();
           } else if (input === "2") {
             // 휴식
           } else if (input === "3") {
@@ -131,6 +132,43 @@
           $heroXp.textContent = `XP: ${hero.xp}/${hero.lev * 15} `;
           $heroAtt.textContent = `ATT: ${hero.att} `;
         }
+
+        createMonster() {
+          const randomIndex = Math.floor(
+            Math.random() * this.monsterList.length
+          );
+          const randomMonster = this.monsterList[randomIndex];
+          // 게임 안에서 몬스터 생성
+          this.monster = new Monster(
+            randomMonster.name,
+            randomMonster.maxHp,
+            randomMonster.hp,
+            randomMonster.xp,
+            randomMonster.att
+          );
+          this.updateMonsterStat();
+          this.showMessage(
+            `몬스터와 마주쳤다. ${this.monster.name}인 것 같다.`
+          );
+        }
+
+        updateMonsterStat() {
+          const { monster } = this;
+          if (monster === null) {
+            $monsterName.textContent = null;
+            $monsterHp.textContent = null;
+            $monsterAtt.textContent = null;
+            return;
+          }
+          // 몬스터 정보 표시
+          $monsterName.textContent = monster.name;
+          $monsterHp.textContent = `HP: ${monster.hp}/${monster.maxHp} `;
+          $monsterAtt.textContent = `ATT: ${monster.att} `;
+        }
+
+        showMessage(text) {
+          $message.textContent = text;
+        }
       }
 
       class Unit {
@@ -149,8 +187,8 @@
 
       class Hero extends Unit {
         constructor(game, name) {
-          this.game = game;
           super(name, 100, 0, 10);
+          this.game = game;
           this.lev = 1;
         }
         heal(monster) {
@@ -170,29 +208,7 @@
         game = new Game(name);
       });
 
-      // $gameMenu.addEventListener("submit", (event) => {
-      //   event.preventDefault();
-      //   const input = event.target["menu-input"].value;
-      //   if (input === "1") {
-      //     //1번 모험
-      //     $gameMenu.style.display = "none"; // 일반 메뉴 숨기기
-      //     $battleMenu.style.display = "block"; // 전투 메뉴 보이기
-      //     // 몬스터 리스트에서 깊은 복사를 통해 몬스터 정보를 빼와야 함. 안 그럼 참조가 되어서 원본 몬스터 리스트에 영향을 줌. 또한, 깊은 복사를 하지 않으면, 객체의 1단계만 복사하기에 깊은 복사를 해야함.
-      //     monster = JSON.parse(
-      //       JSON.stringify(
-      //         monsterList[Math.floor(Math.random() * monsterList.length)]
-      //       )
-      //     ); //몬스터 무작위로 가져오기
-      //     $monsterName.textContent = monster.name;
-      //     $monsterHp.textContent = ` HP: ${monster.hp} / ${monster.maxHp} `;
-      //     $monsterAtt.textContent = `ATT: ${monster.att}`;
-      //   } else if (input === "2") {
-      //     // 2번 휴식
-      //   } else if (input === "3") {
-      //     // 3번 종료
-      //   }
-      // });
-
+      
       // $battleMenu.addEventListener("submit", (event) => {
       //   event.preventDefault();
       //   const input = event.target["battle-input"].value;
