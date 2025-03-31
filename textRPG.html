@@ -56,9 +56,9 @@
           this.monster = null;
           this.hero = null;
           this.monsterList = [
-            { name: "마왕", maxHp: 150, hp: 150, att: 35, xp: 50 },
-            { name: "슬라임", maxHp: 25, hp: 25, att: 10, xp: 10 },
-            { name: "스켈레톤", maxHp: 50, hp: 50, att: 35, xp: 20 },
+            { name: "마왕", hp: 150, xp: 50, att: 35 },
+            { name: "슬라임", hp: 25, xp: 10, att: 10 },
+            { name: "스켈레톤", hp: 50, xp: 20, att: 15 },
           ];
           this.start(name);
         }
@@ -67,6 +67,7 @@
           $gameMenu.addEventListener("submit", this.onGameMenuInput);
           $battleMenu.addEventListener("submit", this.onBattleMenuInput);
           this.changeScreen("game");
+          this.showMessage("");
           // 시작하면 주인공을 생성하고 게임 속 히어로와 연결해야 함.
           this.hero = new Hero(this, name);
           this.updateHeroStat();
@@ -112,21 +113,24 @@
             hero.attack(monster);
             monster.attack(hero);
             if (hero.hp <= 0) {
-              // 주인공이 죽은 경우
               this.showMessage(
                 `${hero.lev}레벨에서 전사. 주인공을 새로 생성하세요`
               );
               this.quit();
+              // 왜 여기에 업데이트를 하면 안되지?
+              // this.updateHeroStat();
+              // this.updateMonsterStat();
             } else if (monster.hp <= 0) {
-              // 몬스터가 죽은 경우
+              // 일단 메세지부터
               this.showMessage(`몬스터를 잡아 ${monster.xp} 경험치를 얻었다.`);
               hero.getXp(monster.xp);
+              // 이미 구조할당으로 해놔서 this.monster안해도 되지 않나?
               this.monster = null;
               this.updateHeroStat();
               this.updateMonsterStat();
+              // 마지막에 화면 바꾸기
               this.changeScreen("game");
             } else {
-              // 싸우는 중.
               this.updateHeroStat();
               this.updateMonsterStat();
               this.showMessage(
@@ -166,7 +170,6 @@
           // 게임 안에서 몬스터 생성
           this.monster = new Monster(
             randomMonster.name,
-            randomMonster.maxHp,
             randomMonster.hp,
             randomMonster.xp,
             randomMonster.att
@@ -194,16 +197,15 @@
         showMessage(text) {
           $message.textContent = text;
         }
-
         quit() {
           this.hero = null;
           this.monster = null;
           this.updateHeroStat();
           this.updateMonsterStat();
-          $gameMenu.removeEventListener('submit', this.onGameMenuInput);
-          $battleMenu.removeEventListener('submit', this.onBattleMenuInput);
-          game = null;
+          $gameMenu.removeEventListener("submit", this.onGameMenuInput);
+          $battleMenu.removeEventListener("submit", this.onBattleMenuInput);
           this.changeScreen("start");
+          game = null;
         }
       }
 
@@ -232,7 +234,6 @@
           this.hp -= monster.att;
         }
         getXp(xp) {
-          // 경험치 획득 및 레벨업
           this.xp += xp;
           if (this.xp >= this.lev * 15) {
             this.xp -= this.lev * 15;
